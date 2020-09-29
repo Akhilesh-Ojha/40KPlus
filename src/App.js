@@ -1,45 +1,12 @@
 import React from "react";
-import data from "./data.json";
 import Products from "./components/Products";
 import Cart from "./components/Cart";
+import { connect } from 'react-redux';
 
 class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      products: data.products,
-      cartItems: localStorage.getItem("cartItems")
-        ? JSON.parse(localStorage.getItem("cartItems"))
-        : [],
-    };
-  }
+
   createOrder = (order) => {
-    alert("Need to save order for " + order.name);
-  };
-  removeFromCart = (product) => {
-    const cartItems = this.state.cartItems.slice();
-    this.setState({
-      cartItems: cartItems.filter((x) => x._id !== product._id),
-    });
-    localStorage.setItem(
-      "cartItems",
-      JSON.stringify(cartItems.filter((x) => x._id !== product._id))
-    );
-  };
-  addToCart = (product) => {
-    const cartItems = this.state.cartItems.slice();
-    let alreadyInCart = false;
-    cartItems.forEach((item) => {
-      if (item._id === product._id) {
-        item.count++;
-        alreadyInCart = true;
-      }
-    });
-    if (!alreadyInCart) {
-      cartItems.push({ ...product, count: 1 });
-    }
-    this.setState({ cartItems });
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    alert("Order for " + order.name + " can be viewed in logs");
   };
   
   render() {
@@ -50,14 +17,14 @@ class App extends React.Component {
             <div className="main">
               <h2 style={{textAlign: "center"}}>Product List</h2>
               <Products
-                products={this.state.products}
-                addToCart={this.addToCart}
+                products={this.props.prd}
+                addToCart={this.props.onAddToCart}
               ></Products>
             </div>
             <div className="sidebar">
               <Cart
-                cartItems={this.state.cartItems}
-                removeFromCart={this.removeFromCart}
+                cartItems={this.props.ci}
+                removeFromCart={this.props.onRemoveFromCart}
                 createOrder={this.createOrder}
               />
             </div>
@@ -68,4 +35,20 @@ class App extends React.Component {
   }
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    prd: state.products,
+    ci: state.cartItems
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onAddToCart: (product) => dispatch({type: "ON_ADD_TO_CART" , payload: {product}}),
+    onRemoveFromCart: (product) => dispatch({type: "ON_REMOVE_FROM_CART", payload: {product}})
+  }
+}
+
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

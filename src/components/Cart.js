@@ -118,7 +118,7 @@ export default class Cart extends Component {
                         ></input>
                       </li>
                       <li>
-                        <button className="button primary" type="submit" className="checkout-form">
+                        <button className="button primary checkout-form" type="submit" >
                           Checkout
                         </button>
                       </li>
